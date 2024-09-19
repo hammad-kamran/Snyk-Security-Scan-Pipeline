@@ -8,16 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run Snyk Scan in CentOS Container
-        run: |
-          docker run -v "$(pwd)":/app -w /app centos:stream9 bash -c "
-            yum install -y epel-release &&
-            yum install -y nodejs npm git &&
-            cd app &&
-            npm install &&
-            npm install -g snyk &&
-            snyk test --json > snyk-report.json
-          "
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      - name: Run Snyk Scan
+        run: snyk test --json > snyk-report.json
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -25,6 +20,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: snyk-report
-          path: app/snyk-report.json
+          path: snyk-report.json
 
 
