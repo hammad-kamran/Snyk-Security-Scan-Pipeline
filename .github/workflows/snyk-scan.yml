@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Run Snyk Scan in CentOS Container
         run: |
           docker run -v "$(pwd)":/app -w /app centos:stream9 bash -c "
@@ -21,8 +22,9 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Upload Snyk Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: snyk-report
           path: app/snyk-report.json
+
 
