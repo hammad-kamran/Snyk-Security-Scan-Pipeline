@@ -1,0 +1,28 @@
+name: Snyk Security Scan
+
+on: [push, pull_request]
+
+jobs:
+  snyk_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Snyk Scan in CentOS Container
+        run: |
+          docker run -v "$(pwd)":/app -w /app centos:stream9 bash -c "
+            yum install -y epel-release &&
+            yum install -y nodejs npm git &&
+            cd app &&
+            npm install &&
+            npm install -g snyk &&
+            snyk test --json > snyk-report.json
+          "
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Upload Snyk Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: snyk-report
+          path: app/snyk-report.json
+
